@@ -21,9 +21,6 @@ module.exports = function (creep) {
                     }
                 }
             }
-            if (creep.transferEnergy(creep.room.find(FIND_MY_STRUCTURES)) == ERR_NOT_IN_RANGE) {
-
-            }
         } else {
             if (creep.transferEnergy(Game.spawns.Home) == ERR_NOT_IN_RANGE) {
                 creep.moveTo(Game.spawns.Home);

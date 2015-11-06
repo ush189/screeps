@@ -35,7 +35,7 @@ module.exports.loop = function () {
                 creepsToBrainwash[0].memory.role = 'harvester';
             }
         }
-    } else if (homeRoom.find(FIND_SOURCES).length > 1 && countHarvester2ndSrc < 1) {
+    } else if (homeRoom.find(FIND_SOURCES).length > 1 && countHarvester2ndSrc < 4) {
         console.log('build harvester2ndSrc: ', Game.spawns.Home.createCreep([WORK, CARRY, MOVE], 'harvester2ndSrc' + Math.floor((Math.random() * 10) + 1), {role: 'harvester2ndSrc'}));
     } else if (countBuilder < 2) {
         console.log('build builder: ', Game.spawns.Home.createCreep([CARRY, MOVE, WORK, CARRY, MOVE], 'builder' + Math.floor((Math.random() * 10) + 1), {role: 'builder'}));
