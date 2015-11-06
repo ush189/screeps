@@ -12,18 +12,27 @@ module.exports = function (creep) {
             creep.moveTo(sources[1]);
         }
     } else {
-        targets = _.filter(creep.room.find(FIND_MY_STRUCTURES), function(myStructure) {
+        var extension = _.filter(creep.room.find(FIND_MY_STRUCTURES), function(myStructure) {
             return myStructure.structureType === STRUCTURE_EXTENSION && myStructure.energy < myStructure.energyCapacity;
-        });
-        if (targets.length) {
-            for (var i in targets) {
-                if (creep.transferEnergy(targets[i]) == ERR_NOT_IN_RANGE) {
-                    creep.moveTo(targets[i]);
-                }
+        }).pop();
+
+        if (extension) {
+            if (creep.transferEnergy(extension) == ERR_NOT_IN_RANGE) {
+                creep.moveTo(extension);
             }
-        } else {
+        } else if (Game.spawns.Home.energy < Game.spawns.Home.energyCapacity) {
             if (creep.transferEnergy(Game.spawns.Home) == ERR_NOT_IN_RANGE) {
                 creep.moveTo(Game.spawns.Home);
+            }
+        } else {
+            var storage = _.filter(creep.room.find(FIND_MY_STRUCTURES), function(myStructure) {
+                return myStructure.structureType === STRUCTURE_STORAGE;
+            }).pop();
+
+            if (storage) {
+                if (creep.transferEnergy(storage) == ERR_NOT_IN_RANGE) {
+                    creep.moveTo(storage);
+                }
             }
         }
     }
