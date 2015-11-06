@@ -12,13 +12,13 @@ module.exports = function (creep) {
             creep.moveTo(sources[1]);
         }
     } else {
-        targets = creep.room.find(FIND_MY_STRUCTURES);
+        targets = _.filter(creep.room.find(FIND_MY_STRUCTURES), function(myStructure) {
+            return myStructure.structureType === STRUCTURE_EXTENSION && myStructure.energy < myStructure.energyCapacity;
+        });
         if (targets.length) {
             for (var i in targets) {
-                if (targets[i].structureType === STRUCTURE_EXTENSION/* || targets[i].structureType === STRUCTURE_STORAGE)*/) {
-                    if (creep.transferEnergy(targets[i]) == ERR_NOT_IN_RANGE) {
-                        creep.moveTo(targets[i]);
-                    }
+                if (creep.transferEnergy(targets[i]) == ERR_NOT_IN_RANGE) {
+                    creep.moveTo(targets[i]);
                 }
             }
         } else {
