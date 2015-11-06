@@ -17,15 +17,19 @@ module.exports = function(creep) {
                 creep.moveTo(targets[0]);
             }
         } else {
-            targets = creep.room.find(FIND_STRUCTURES);
-            var lowestHits = null;
-            for (var i in targets) {
-                if ((targets[i].structureType === STRUCTURE_RAMPART || targets[i].structureType === STRUCTURE_WALL) && (lowestHits === null || targets[i].hits < lowestHits.hits)) {
-                    lowestHits = targets[i];
+            var repairableStructures = _.filter(creep.room.find(FIND_STRUCTURES), function(structure) {
+                return (structure.structureType === STRUCTURE_RAMPART || structure.structureType === STRUCTURE_WALL) && structure.hits < structure.hitsMax;
+            });
+
+            var repairableStructuresInRange = creep.pos.findInRange(repairableStructures, 1);
+            if (repairableStructuresInRange.length) {
+                creep.repair(_.sortBy(repairableStructuresInRange, 'hits')[0]);
+            } else {
+                var repairableStructureWithLowestHits = _.sortBy(repairableStructures, 'hits')[0];
+
+                if (creep.repair(repairableStructureWithLowestHits) == ERR_NOT_IN_RANGE) {
+                    creep.moveTo(repairableStructureWithLowestHits);
                 }
-            }
-            if (creep.repair(lowestHits) == ERR_NOT_IN_RANGE) {
-                creep.moveTo(lowestHits);
             }
         }
     }
