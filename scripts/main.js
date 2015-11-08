@@ -47,4 +47,4 @@ module.exports.loop = function () {
     } else if (countClaimer < 1) {
         console.log('build claimer: ', Game.spawns.Home.createCreep([WORK, MOVE], 'claimer' + Math.floor((Math.random() * 10) + 1), {role: 'claimer'}));
     }
-}
+};
