@@ -3,6 +3,7 @@ var harvester2ndSrc = require('harvester2ndSrc');
 var builder = require('builder');
 var guard = require('guard');
 var upgrader = require('upgrader');
+var claimer = require('claimer');
 
 module.exports.loop = function () {
     var countHarvester = 0;
@@ -10,6 +11,7 @@ module.exports.loop = function () {
     var countBuilder = 0;
     var countGuard = 0;
     var countUpgrader = 0;
+    var countClaimer = 0;
 
     var homeRoom = Game.spawns.Home.room;
 
@@ -21,6 +23,7 @@ module.exports.loop = function () {
             case 'builder': builder(creep); countBuilder++; break;
             case 'guard': guard(creep); countGuard++; break;
             case 'upgrader': upgrader(creep); countUpgrader++; break;
+            case 'claimer': claimer(creep); countClaimer++; break;
         }
     }
 
@@ -41,5 +44,7 @@ module.exports.loop = function () {
         console.log('build builder: ', Game.spawns.Home.createCreep([CARRY, MOVE, WORK, CARRY, MOVE], 'builder' + Math.floor((Math.random() * 10) + 1), {role: 'builder'}));
     } else if (countUpgrader < 2) {
         console.log('build upgrader: ', Game.spawns.Home.createCreep([WORK, WORK, CARRY, MOVE], 'upgrader' + Math.floor((Math.random() * 10) + 1), {role: 'upgrader'}));
+    } else if (countClaimer < 1) {
+        console.log('build claimer: ', Game.spawns.Home.createCreep([WORK, MOVE], 'claimer' + Math.floor((Math.random() * 10) + 1), {role: 'claimer'}));
     }
 }
