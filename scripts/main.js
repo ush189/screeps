@@ -45,6 +45,6 @@ module.exports.loop = function () {
     } else if (countUpgrader < 2) {
         console.log('build upgrader: ', Game.spawns.Home.createCreep([WORK, WORK, CARRY, MOVE], 'upgrader' + Math.floor((Math.random() * 10) + 1), {role: 'upgrader'}));
     } else if (countClaimer < 1) {
-        console.log('build claimer: ', Game.spawns.Home.createCreep([WORK, MOVE], 'claimer' + Math.floor((Math.random() * 10) + 1), {role: 'claimer'}));
+        console.log('build claimer: ', Game.spawns.Home.createCreep([WORK, CARRY, MOVE, WORK, CARRY, MOVE], 'claimer' + Math.floor((Math.random() * 10) + 1), {role: 'claimer'}));
     }
 };
