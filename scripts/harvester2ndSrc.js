@@ -1,4 +1,6 @@
 module.exports = function (creep) {
+    var spawn = creep.room.find(FIND_MY_SPAWNS)[0];
+
     if (creep.carry.energy < creep.carryCapacity) {
         var sources = creep.room.find(FIND_SOURCES);
         if (creep.harvest(sources[1]) == ERR_NOT_IN_RANGE) {
@@ -13,9 +15,9 @@ module.exports = function (creep) {
             if (creep.transferEnergy(extension) == ERR_NOT_IN_RANGE) {
                 creep.moveTo(extension);
             }
-        } else if (Game.spawns.Home.energy < Game.spawns.Home.energyCapacity) {
-            if (creep.transferEnergy(Game.spawns.Home) == ERR_NOT_IN_RANGE) {
-                creep.moveTo(Game.spawns.Home);
+        } else if (spawn.energy < spawn.energyCapacity) {
+            if (creep.transferEnergy(spawn) == ERR_NOT_IN_RANGE) {
+                creep.moveTo(spawn);
             }
         } else {
             var storage = _.filter(creep.room.find(FIND_MY_STRUCTURES), function(myStructure) {

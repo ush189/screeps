@@ -1,7 +1,9 @@
 module.exports = function(creep) {
+    var spawn = creep.room.find(FIND_MY_SPAWNS)[0];
+
     if (creep.carry.energy == 0) {
-        if (Game.spawns.Home.transferEnergy(creep) == ERR_NOT_IN_RANGE) {
-            creep.moveTo(Game.spawns.Home);
+        if (spawn.transferEnergy(creep) == ERR_NOT_IN_RANGE) {
+            creep.moveTo(spawn);
         }
     } else {
         var targets = creep.room.find(FIND_CONSTRUCTION_SITES);
