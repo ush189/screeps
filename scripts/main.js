@@ -6,14 +6,14 @@ var upgrader = require('upgrader');
 var claimer = require('claimer');
 
 module.exports.loop = function () {
-    var countHarvester = 0;
-    var countHarvester2ndSrc = 0;
-    var countBuilder = 0;
-    var countGuard = 0;
-    var countUpgrader = 0;
-    var countClaimer = 0;
-
     for (var code in Game.rooms) {
+        var countHarvester = 0;
+        var countHarvester2ndSrc = 0;
+        var countBuilder = 0;
+        var countGuard = 0;
+        var countUpgrader = 0;
+        var countClaimer = 0;
+
         var room = Game.rooms[code];
         var spawn = room.find(FIND_MY_SPAWNS)[0];
         var creeps = room.find(FIND_MY_CREEPS);
