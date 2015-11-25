@@ -21,10 +21,7 @@ module.exports = function(creep) {
                 creep.repair(_.sortBy(repairableStructuresInRange, 'hits')[0]);
             } else {
                 var repairableStructureWithLowestHits = _.sortBy(repairableStructures, 'hits')[0];
-
-                if (creep.repair(repairableStructureWithLowestHits) == ERR_NOT_IN_RANGE) {
-                    creep.moveTo(repairableStructureWithLowestHits);
-                }
+                creep.moveTo(repairableStructureWithLowestHits);
             }
         }
     }
