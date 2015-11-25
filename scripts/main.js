@@ -33,7 +33,7 @@ module.exports.loop = function () {
         if (spawn) {
             if (countHarvester < 4) {
                 if (spawn.canCreateCreep([WORK, CARRY, MOVE]) === OK) {
-                    spawn.createCreep([WORK, CARRY, MOVE], 'harvester' + Math.floor((Math.random() * 10) + 1), {role: 'harvester'})
+                    console.log(room + ' build harvester: ', spawn.createCreep([WORK, CARRY, MOVE], 'harvester' + Math.floor((Math.random() * 10) + 1), {role: 'harvester'}));
                 } else {
                     var creepsToBrainwash = _.filter(creeps, function(creep) {
                         return creep.memory.role !== 'harvester';
