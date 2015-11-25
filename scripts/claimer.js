@@ -1,5 +1,5 @@
 module.exports = function(creep) {
-    var source = creep.room.find(FIND_SOURCES)[0];
+    var source = creep.pos.findClosestByRange(FIND_SOURCES);
 
     if (creep.room.controller && !creep.room.controller.my) {
         if (creep.claimController(creep.room.controller) == ERR_NOT_IN_RANGE) {
@@ -33,6 +33,14 @@ module.exports = function(creep) {
             if (targets.length) {
                 if (creep.build(targets[0]) == ERR_NOT_IN_RANGE) {
                     creep.moveTo(targets[0]);
+                }
+            } else {
+                if (creep.upgradeController(creep.room.controller) == ERR_NOT_IN_RANGE) {
+                    creep.moveTo(creep.room.controller);
+                } else if (creep.upgradeController(creep.room.controller) == ERR_NOT_ENOUGH_ENERGY) {
+                    if (spawn.transferEnergy(creep) == ERR_NOT_IN_RANGE) {
+                        creep.moveTo(spawn);
+                    }
                 }
             }
         }
