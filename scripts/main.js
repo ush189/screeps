@@ -6,6 +6,10 @@ var upgrader = require('upgrader');
 var claimer = require('claimer');
 var streeter = require('streeter');
 
+Spawn.prototype.createCreepDynamic = function(body, role, factor) {
+    return this.createCreep(body, role + Math.floor((Math.random() * 10) + (factor - 1) * 10), {role: role});
+};
+
 module.exports.loop = function () {
     for (var code in Game.rooms) {
         var countHarvester = 0;
@@ -36,9 +40,9 @@ module.exports.loop = function () {
         if (spawn) {
             if (countHarvester < 4) {
                 if (spawn.canCreateCreep([WORK, WORK, CARRY, CARRY, MOVE, MOVE]) === OK) {
-                    console.log(room + ' build harvester: ', spawn.createCreep([WORK, WORK, CARRY, CARRY, MOVE, MOVE], 'harvester' + Math.floor((Math.random() * 10) + 10), {role: 'harvester'}));
+                    console.log(room + ' build harvester: ', spawn.createCreepDynamic([WORK, WORK, CARRY, CARRY, MOVE, MOVE], 'harvester', 2));
                 } else if (spawn.canCreateCreep([WORK, CARRY, MOVE]) === OK) {
-                    console.log(room + ' build harvester: ', spawn.createCreep([WORK, CARRY, MOVE], 'harvester' + Math.floor(Math.random() * 10), {role: 'harvester'}));
+                    console.log(room + ' build harvester: ', spawn.createCreepDynamic([WORK, CARRY, MOVE], 'harvester', 1));
                 } else {
                     var creepsToBrainwash = _.filter(creeps, function(creep) {
                         return creep.memory.role !== 'harvester';
@@ -48,15 +52,15 @@ module.exports.loop = function () {
                     }
                 }
             } else if (room.find(FIND_SOURCES).length > 1 && countHarvester2ndSrc < 4) {
-                console.log(room + ' build harvester2ndSrc: ', spawn.createCreep([WORK, CARRY, MOVE], 'harvester2ndSrc' + Math.floor(Math.random() * 10), {role: 'harvester2ndSrc'}));
+                console.log(room + ' build harvester2ndSrc: ', spawn.createCreepDynamic([WORK, CARRY, MOVE], 'harvester2ndSrc', 1));
             } else if (countBuilder < 2) {
-                console.log(room + ' build builder: ', spawn.createCreep([CARRY, MOVE, WORK, CARRY, MOVE], 'builder' + Math.floor(Math.random() * 10), {role: 'builder'}));
+                console.log(room + ' build builder: ', spawn.createCreepDynamic([WORK, CARRY, MOVE], 'builder', 1));
             } else if (countUpgrader < 2) {
-                console.log(room + ' build upgrader: ', spawn.createCreep([WORK, WORK, CARRY, MOVE], 'upgrader' + Math.floor(Math.random() * 10), {role: 'upgrader'}));
+                console.log(room + ' build upgrader: ', spawn.createCreepDynamic([WORK, CARRY, MOVE], 'upgrader', 1));
             } else if (countClaimer < 1) {
-                console.log(room + ' build claimer: ', spawn.createCreep([WORK, MOVE, CARRY, MOVE, WORK, MOVE, CARRY, MOVE], 'claimer' + Math.floor(Math.random() * 10), {role: 'claimer'}));
+                console.log(room + ' build claimer: ', spawn.createCreepDynamic([WORK, CARRY, MOVE], 'claimer', 1));
             } else if (countStreeter < 1) {
-                console.log(room + ' build streeter: ', spawn.createCreep([CARRY, MOVE, WORK, CARRY, MOVE], 'streeter' + Math.floor(Math.random() * 10), {role: 'streeter'}));
+                console.log(room + ' build streeter: ', spawn.createCreepDynamic([WORK, CARRY, MOVE], 'streeter', 1));
             }
         }
     }
