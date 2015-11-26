@@ -6,7 +6,15 @@ var upgrader = require('upgrader');
 var claimer = require('claimer');
 var streeter = require('streeter');
 
-Spawn.prototype.createCreepDynamic = function(body, role, factor) {
+Spawn.prototype.createCreepDynamic = function(body, role) {
+    var factor;
+    if (this.canCreateCreep(body.concat(body)) === OK) {
+        body = body.concat(body);
+        factor = 2;
+    } else {
+        factor = 1;
+    }
+
     return this.createCreep(body, role + Math.floor((Math.random() * 10) + (factor - 1) * 10), {role: role});
 };
 
@@ -39,11 +47,9 @@ module.exports.loop = function () {
         var spawn = room.find(FIND_MY_SPAWNS)[0];
         if (spawn) {
             if (countHarvester < 4) {
-                if (spawn.canCreateCreep([WORK, WORK, CARRY, CARRY, MOVE, MOVE]) === OK) {
-                    console.log(room + ' build harvester: ', spawn.createCreepDynamic([WORK, WORK, CARRY, CARRY, MOVE, MOVE], 'harvester', 2));
-                } else if (spawn.canCreateCreep([WORK, CARRY, MOVE]) === OK) {
-                    console.log(room + ' build harvester: ', spawn.createCreepDynamic([WORK, CARRY, MOVE], 'harvester', 1));
-                } else {
+                var result = spawn.createCreepDynamic([WORK, CARRY, MOVE], 'harvester');
+                console.log(room + ' build harvester: ', result);
+                if (result === ERR_NOT_ENOUGH_ENERGY) {
                     var creepsToBrainwash = _.filter(creeps, function(creep) {
                         return creep.memory.role !== 'harvester';
                     });
@@ -52,15 +58,15 @@ module.exports.loop = function () {
                     }
                 }
             } else if (room.find(FIND_SOURCES).length > 1 && countHarvester2ndSrc < 4) {
-                console.log(room + ' build harvester2ndSrc: ', spawn.createCreepDynamic([WORK, CARRY, MOVE], 'harvester2ndSrc', 1));
+                console.log(room + ' build harvester2ndSrc: ', spawn.createCreepDynamic([WORK, CARRY, MOVE], 'harvester2ndSrc'));
             } else if (countBuilder < 2) {
-                console.log(room + ' build builder: ', spawn.createCreepDynamic([WORK, CARRY, MOVE], 'builder', 1));
+                console.log(room + ' build builder: ', spawn.createCreepDynamic([WORK, CARRY, MOVE], 'builder'));
             } else if (countUpgrader < 2) {
-                console.log(room + ' build upgrader: ', spawn.createCreepDynamic([WORK, CARRY, MOVE], 'upgrader', 1));
+                console.log(room + ' build upgrader: ', spawn.createCreepDynamic([WORK, CARRY, MOVE], 'upgrader'));
             } else if (countClaimer < 1) {
-                console.log(room + ' build claimer: ', spawn.createCreepDynamic([WORK, CARRY, MOVE], 'claimer', 1));
+                console.log(room + ' build claimer: ', spawn.createCreepDynamic([WORK, CARRY, MOVE], 'claimer'));
             } else if (countStreeter < 1) {
-                console.log(room + ' build streeter: ', spawn.createCreepDynamic([WORK, CARRY, MOVE], 'streeter', 1));
+                console.log(room + ' build streeter: ', spawn.createCreepDynamic([WORK, CARRY, MOVE], 'streeter'));
             }
         }
     }
