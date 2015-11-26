@@ -4,6 +4,7 @@ var builder = require('builder');
 var guard = require('guard');
 var upgrader = require('upgrader');
 var claimer = require('claimer');
+var streeter = require('streeter');
 
 module.exports.loop = function () {
     for (var code in Game.rooms) {
@@ -13,6 +14,7 @@ module.exports.loop = function () {
         var countGuard = 0;
         var countUpgrader = 0;
         var countClaimer = 0;
+        var countStreeter = 0;
 
         var room = Game.rooms[code];
         var creeps = room.find(FIND_MY_CREEPS);
@@ -26,6 +28,7 @@ module.exports.loop = function () {
                 case 'guard': guard(creep); countGuard++; break;
                 case 'upgrader': upgrader(creep); countUpgrader++; break;
                 case 'claimer': claimer(creep); countClaimer++; break;
+                case 'streeter': streeter(creep); countStreeter++; break;
             }
         }
 
@@ -50,6 +53,8 @@ module.exports.loop = function () {
                 console.log(room + ' build upgrader: ', spawn.createCreep([WORK, WORK, CARRY, MOVE], 'upgrader' + Math.floor((Math.random() * 10) + 1), {role: 'upgrader'}));
             } else if (countClaimer < 1) {
                 console.log(room + ' build claimer: ', spawn.createCreep([WORK, MOVE, CARRY, MOVE, WORK, MOVE, CARRY, MOVE], 'claimer' + Math.floor((Math.random() * 10) + 1), {role: 'claimer'}));
+            } else if (countStreeter < 1) {
+                console.log(room + ' build streeter: ', spawn.createCreep([CARRY, MOVE, WORK, CARRY, MOVE], 'streeter' + Math.floor(Math.random() * 10), {role: 'streeter'}));
             }
         }
     }
