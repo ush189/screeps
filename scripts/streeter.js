@@ -10,9 +10,12 @@ module.exports = function(creep) {
             return structure.structureType === STRUCTURE_ROAD && structure.hits < structure.hitsMax;
         });
 
-        var repairableStructureWithLowestHits = _.sortBy(repairableStructures, 'hits')[0];
-        if (creep.repair(repairableStructureWithLowestHits) == ERR_NOT_IN_RANGE) {
-            creep.moveTo(repairableStructureWithLowestHits);
+        var repairableStructuresInRange = creep.pos.findInRange(repairableStructures, 3);
+        if (repairableStructuresInRange.length) {
+            creep.repair(repairableStructuresInRange[0]);
+        } else {
+            var repairableStructureWithLowestHits = _.sortBy(repairableStructures, 'hits')[0];
+            creep.moveTo(repairableStructureWithLowestHits)
         }
     }
 };
