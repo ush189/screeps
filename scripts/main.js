@@ -8,7 +8,10 @@ var streeter = require('streeter');
 
 Spawn.prototype.createCreepDynamic = function(body, role) {
     var factor;
-    if (this.canCreateCreep(body.concat(body)) === OK) {
+    if (this.canCreateCreep(body.concat(body, body)) === OK) {
+        body = body.concat(body, body);
+        factor = 3;
+    } else if (this.canCreateCreep(body.concat(body)) === OK) {
         body = body.concat(body);
         factor = 2;
     } else {
