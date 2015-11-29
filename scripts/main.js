@@ -32,13 +32,13 @@ module.exports.loop = function () {
         var countClaimer = 0;
         var countStreeter = 0;
 
-        var countHarvesterExtern = _.filter(Game.creeps, function(creep) {
-            return creep.memory.role == 'harvesterExtern';
-        });
-
         var room = Game.rooms[code];
         var creeps = room.find(FIND_MY_CREEPS);
         var spawn = room.find(FIND_MY_SPAWNS)[0];
+
+        var countHarvesterExtern = _.filter(Game.creeps, function(creep) {
+            return creep.memory.role == 'harvesterExtern' && spawn && creep.memory.homeSpawnId == spawn.id;
+        }).length;
 
         for (var name in creeps) {
             var creep = creeps[name];
@@ -76,7 +76,7 @@ module.exports.loop = function () {
                 console.log(room + ' build claimer: ', spawn.createCreepDynamic([WORK, CARRY, MOVE], 'claimer'));
             } else if (countStreeter < 1) {
                 console.log(room + ' build streeter: ', spawn.createCreepDynamic([WORK, CARRY, MOVE], 'streeter'));
-            } else if (countHarvesterExtern < 1) {
+            } else if (countHarvesterExtern < 2) {
                 console.log(room + ' build harvesterExtern: ', spawn.createCreepDynamic([WORK, CARRY, MOVE], 'harvesterExtern'));
             }
         }
