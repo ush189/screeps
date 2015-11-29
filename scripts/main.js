@@ -5,6 +5,7 @@ var guard = require('guard');
 var upgrader = require('upgrader');
 var claimer = require('claimer');
 var streeter = require('streeter');
+var harvesterExtern = require('harvesterExtern');
 
 Spawn.prototype.createCreepDynamic = function(body, role) {
     var factor;
@@ -31,8 +32,13 @@ module.exports.loop = function () {
         var countClaimer = 0;
         var countStreeter = 0;
 
+        var countHarvesterExtern = _.filter(Game.creeps, function(creep) {
+            return creep.memory.role == 'harvesterExtern';
+        });
+
         var room = Game.rooms[code];
         var creeps = room.find(FIND_MY_CREEPS);
+        var spawn = room.find(FIND_MY_SPAWNS)[0];
 
         for (var name in creeps) {
             var creep = creeps[name];
@@ -44,10 +50,10 @@ module.exports.loop = function () {
                 case 'upgrader': upgrader(creep); countUpgrader++; break;
                 case 'claimer': claimer(creep); countClaimer++; break;
                 case 'streeter': streeter(creep); countStreeter++; break;
+                case 'harvesterExtern': harvesterExtern(creep, spawn); break;
             }
         }
 
-        var spawn = room.find(FIND_MY_SPAWNS)[0];
         if (spawn) {
             if (countHarvester < 4) {
                 var result = spawn.createCreepDynamic([WORK, CARRY, MOVE], 'harvester');
@@ -64,12 +70,14 @@ module.exports.loop = function () {
                 console.log(room + ' build harvester2ndSrc: ', spawn.createCreepDynamic([WORK, CARRY, MOVE], 'harvester2ndSrc'));
             } else if (countBuilder < 2) {
                 console.log(room + ' build builder: ', spawn.createCreepDynamic([WORK, CARRY, MOVE], 'builder'));
-            } else if (countUpgrader < 2) {
+            } else if (countUpgrader < 3) {
                 console.log(room + ' build upgrader: ', spawn.createCreepDynamic([WORK, CARRY, MOVE], 'upgrader'));
-            } else if (countClaimer < 1) {
+            } else if (countClaimer < 0) {
                 console.log(room + ' build claimer: ', spawn.createCreepDynamic([WORK, CARRY, MOVE], 'claimer'));
             } else if (countStreeter < 1) {
                 console.log(room + ' build streeter: ', spawn.createCreepDynamic([WORK, CARRY, MOVE], 'streeter'));
+            } else if (countHarvesterExtern < 1) {
+                console.log(room + ' build harvesterExtern: ', spawn.createCreepDynamic([WORK, CARRY, MOVE], 'harvesterExtern'));
             }
         }
     }
