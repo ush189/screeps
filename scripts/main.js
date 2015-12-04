@@ -9,7 +9,10 @@ var harvesterExtern = require('harvesterExtern');
 
 Spawn.prototype.createCreepDynamic = function(body, role) {
     var factor;
-    if (this.canCreateCreep(body.concat(body, body)) === OK) {
+    if (this.canCreateCreep(body.concat(body, body, body)) === OK) {
+        body = body.concat(body, body, body);
+        factor = 4;
+    } else if (this.canCreateCreep(body.concat(body, body)) === OK) {
         body = body.concat(body, body);
         factor = 3;
     } else if (this.canCreateCreep(body.concat(body)) === OK) {
@@ -35,6 +38,19 @@ module.exports.loop = function () {
         var room = Game.rooms[code];
         var creeps = room.find(FIND_MY_CREEPS);
         var spawn = room.find(FIND_MY_SPAWNS)[0];
+
+        var links = room.find(FIND_MY_STRUCTURES, {
+            filter: { structureType: STRUCTURE_LINK }
+        });
+        if (links.length >= 2) {
+            linksByRangeToController = _.sortBy(links, function(link) {
+                return link.pos.getRangeTo(room.controller);
+            })
+            var targetLink = linksByRangeToController.shift();
+            for (var i in linksByRangeToController) {
+                linksByRangeToController[i].transferEnergy(targetLink);
+            }
+        }
 
         var countHarvesterExtern = _.filter(Game.creeps, function(creep) {
             return creep.memory.role == 'harvesterExtern' && spawn && creep.memory.homeSpawnId == spawn.id;
@@ -76,7 +92,7 @@ module.exports.loop = function () {
                 console.log(room + ' build claimer: ', spawn.createCreepDynamic([WORK, CARRY, MOVE], 'claimer'));
             } else if (countStreeter < 1) {
                 console.log(room + ' build streeter: ', spawn.createCreepDynamic([WORK, CARRY, MOVE], 'streeter'));
-            } else if (countHarvesterExtern < 2) {
+            } else if (countHarvesterExtern < 3) {
                 console.log(room + ' build harvesterExtern: ', spawn.createCreepDynamic([WORK, CARRY, MOVE], 'harvesterExtern'));
             }
         }
