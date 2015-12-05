@@ -1,10 +1,7 @@
-module.exports = function (creep) {
+module.exports = function (creep, storage) {
     var spawn = creep.room.find(FIND_MY_SPAWNS)[0];
     var source = _.sortBy(spawn.room.find(FIND_SOURCES), function(source) {
         return spawn.pos.getRangeTo(source.pos);
-    }).pop();
-    var storage = creep.room.find(FIND_MY_STRUCTURES, {
-        filter: { structureType: STRUCTURE_STORAGE }
     }).pop();
 
     if (creep.carry.energy < creep.carryCapacity && source.energy == 0 && storage && storage.store.energy > 0) {

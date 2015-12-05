@@ -6,23 +6,40 @@ var upgrader = require('upgrader');
 var claimer = require('claimer');
 var streeter = require('streeter');
 var harvesterExtern = require('harvesterExtern');
+var linker = require('linker');
 
-Spawn.prototype.createCreepDynamic = function(body, role) {
+Spawn.prototype.createCreepDynamic = function(room, body, role, maxFactor) {
     var factor;
-    if (this.canCreateCreep(body.concat(body, body, body)) === OK) {
+
+    if ((!maxFactor || maxFactor >= 4) && this.canCreateCreep(body.concat(body, body, body)) === OK) {
         body = body.concat(body, body, body);
         factor = 4;
-    } else if (this.canCreateCreep(body.concat(body, body)) === OK) {
+    } else if ((!maxFactor || maxFactor >= 3) && this.canCreateCreep(body.concat(body, body)) === OK) {
         body = body.concat(body, body);
         factor = 3;
-    } else if (this.canCreateCreep(body.concat(body)) === OK) {
+    } else if ((!maxFactor || maxFactor >= 2) && this.canCreateCreep(body.concat(body)) === OK) {
         body = body.concat(body);
         factor = 2;
     } else {
         factor = 1;
     }
 
-    return this.createCreep(body, role + Math.floor((Math.random() * 10) + (factor - 1) * 10), {role: role});
+    var minFactor = this.memory.minFactor || 1;
+    if (!maxFactor && factor < minFactor) {
+        console.log('minFactor ' + minFactor + ' > factor ' + factor);
+
+        if (room.find(FIND_MY_CREEPS).length == 0) {
+            // reset factor
+            this.memory.minFactor = 1;
+        }
+
+        return null;
+    }
+
+    var creepName = role + Math.floor((Math.random() * 10) + (factor - 1) * 10);
+    result = this.createCreep(body, creepName, {role: role});
+    console.log(room, 'build ' + role + ': ', result);
+    return result;
 };
 
 module.exports.loop = function () {
@@ -34,10 +51,14 @@ module.exports.loop = function () {
         var countUpgrader = 0;
         var countClaimer = 0;
         var countStreeter = 0;
+        var countLinker = 0;
 
         var room = Game.rooms[code];
         var creeps = room.find(FIND_MY_CREEPS);
         var spawn = room.find(FIND_MY_SPAWNS)[0];
+        var storage = room.find(FIND_MY_STRUCTURES, {
+            filter: { structureType: STRUCTURE_STORAGE }
+        }).pop();
 
         var links = room.find(FIND_MY_STRUCTURES, {
             filter: { structureType: STRUCTURE_LINK }
@@ -45,7 +66,7 @@ module.exports.loop = function () {
         if (links.length >= 2) {
             linksByRangeToController = _.sortBy(links, function(link) {
                 return link.pos.getRangeTo(room.controller);
-            })
+            });
             var targetLink = linksByRangeToController.shift();
             for (var i in linksByRangeToController) {
                 linksByRangeToController[i].transferEnergy(targetLink);
@@ -60,20 +81,20 @@ module.exports.loop = function () {
             var creep = creeps[name];
             switch (creep.memory.role) {
                 case 'harvester': harvester(creep); countHarvester++; break;
-                case 'harvester2ndSrc': harvester2ndSrc(creep); countHarvester2ndSrc++; break;
+                case 'harvester2ndSrc': harvester2ndSrc(creep, storage); countHarvester2ndSrc++; break;
                 case 'builder': builder(creep); countBuilder++; break;
                 case 'guard': guard(creep); countGuard++; break;
-                case 'upgrader': upgrader(creep); countUpgrader++; break;
+                case 'upgrader': case 'upgrader+': upgrader(creep); countUpgrader++; break;
                 case 'claimer': claimer(creep); countClaimer++; break;
                 case 'streeter': streeter(creep); countStreeter++; break;
                 case 'harvesterExtern': harvesterExtern(creep, spawn); break;
+                case 'linker': linker(creep, storage); countLinker++; break;
             }
         }
 
         if (spawn) {
             if (countHarvester < 4) {
-                var result = spawn.createCreepDynamic([WORK, CARRY, MOVE], 'harvester');
-                console.log(room + ' build harvester: ', result);
+                var result = spawn.createCreepDynamic(room, [WORK, CARRY, MOVE], 'harvester');
                 if (result === ERR_NOT_ENOUGH_ENERGY) {
                     var creepsToBrainwash = _.filter(creeps, function(creep) {
                         return creep.memory.role !== 'harvester';
@@ -83,17 +104,23 @@ module.exports.loop = function () {
                     }
                 }
             } else if (room.find(FIND_SOURCES).length > 1 && countHarvester2ndSrc < 4) {
-                console.log(room + ' build harvester2ndSrc: ', spawn.createCreepDynamic([WORK, CARRY, MOVE], 'harvester2ndSrc'));
+                spawn.createCreepDynamic(room, [WORK, CARRY, MOVE], 'harvester2ndSrc');
             } else if (countBuilder < 2) {
-                console.log(room + ' build builder: ', spawn.createCreepDynamic([WORK, CARRY, MOVE], 'builder'));
+                spawn.createCreepDynamic(room, [WORK, CARRY, MOVE], 'builder');
             } else if (countUpgrader < 3) {
-                console.log(room + ' build upgrader: ', spawn.createCreepDynamic([WORK, CARRY, MOVE], 'upgrader'));
+                if (links.length >= 2) {
+                    spawn.createCreepDynamic(room, [WORK, WORK, CARRY, MOVE], 'upgrader+');
+                } else {
+                    spawn.createCreepDynamic(room, [WORK, CARRY, MOVE], 'upgrader');
+                }
             } else if (countClaimer < 0) {
-                console.log(room + ' build claimer: ', spawn.createCreepDynamic([WORK, CARRY, MOVE], 'claimer'));
+                spawn.createCreepDynamic(room, [WORK, CARRY, MOVE], 'claimer');
             } else if (countStreeter < 1) {
-                console.log(room + ' build streeter: ', spawn.createCreepDynamic([WORK, CARRY, MOVE], 'streeter'));
+                spawn.createCreepDynamic(room, [WORK, CARRY, MOVE], 'streeter');
             } else if (countHarvesterExtern < 3) {
-                console.log(room + ' build harvesterExtern: ', spawn.createCreepDynamic([WORK, CARRY, MOVE], 'harvesterExtern'));
+                spawn.createCreepDynamic(room, [WORK, CARRY, MOVE], 'harvesterExtern');
+            } else if (links.length && storage && countLinker < 1) {
+                spawn.createCreepDynamic(room, [CARRY, CARRY, CARRY, CARRY, CARRY, MOVE], 'linker', 1);
             }
         }
     }
