@@ -49,7 +49,6 @@ module.exports.loop = function () {
         var countBuilder = 0;
         var countGuard = 0;
         var countUpgrader = 0;
-        var countClaimer = 0;
         var countStreeter = 0;
         var countLinker = 0;
 
@@ -77,6 +76,10 @@ module.exports.loop = function () {
             return creep.memory.role == 'harvesterExtern' && spawn && creep.memory.homeSpawnId == spawn.id;
         }).length;
 
+        var countClaimer = _.filter(Game.creeps, function(creep) {
+            return creep.memory.role == 'claimer';
+        }).length;
+
         for (var name in creeps) {
             var creep = creeps[name];
             switch (creep.memory.role) {
@@ -85,7 +88,7 @@ module.exports.loop = function () {
                 case 'builder': builder(creep); countBuilder++; break;
                 case 'guard': guard(creep); countGuard++; break;
                 case 'upgrader': case 'upgrader+': upgrader(creep); countUpgrader++; break;
-                case 'claimer': claimer(creep); countClaimer++; break;
+                case 'claimer': claimer(creep); break;
                 case 'streeter': streeter(creep); countStreeter++; break;
                 case 'harvesterExtern': harvesterExtern(creep, spawn); break;
                 case 'linker': linker(creep, storage); countLinker++; break;
@@ -113,7 +116,7 @@ module.exports.loop = function () {
                 } else {
                     spawn.createCreepDynamic(room, [WORK, CARRY, MOVE], 'upgrader');
                 }
-            } else if (countClaimer < 0) {
+            } else if (Game.flags.FlagClaim && countClaimer < 1) {
                 spawn.createCreepDynamic(room, [WORK, CARRY, MOVE], 'claimer');
             } else if (countStreeter < 1) {
                 spawn.createCreepDynamic(room, [WORK, CARRY, MOVE], 'streeter');
