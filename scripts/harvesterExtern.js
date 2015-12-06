@@ -1,6 +1,7 @@
 var externRoomPerSpawn = {
     Home: 'E12N14',
-    Outpost1: 'E11N12'
+    Outpost1: 'E11N12',
+    Outpost2: 'E11N13'
 };
 
 module.exports = function (creep, homeSpawn) {
