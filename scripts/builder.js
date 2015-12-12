@@ -12,11 +12,12 @@ module.exports = function(creep) {
             if (creep.build(targets[0]) == ERR_NOT_IN_RANGE) {
                 creep.moveTo(targets[0]);
             }
+            delete creep.memory.targetId;
         } else {
             var target;
             if (creep.memory.targetId) {
                 target = Game.getObjectById(creep.memory.targetId);
-                if (target.hits == target.hitsMax) {
+                if (!target || target.hits == target.hitsMax) {
                     target = null;
                 }
             }
