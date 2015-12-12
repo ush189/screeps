@@ -4,11 +4,11 @@ module.exports = function (creep, storage) {
         return spawn.pos.getRangeTo(source.pos);
     }).pop();
 
-    if (creep.carry.energy < creep.carryCapacity && source.energy == 0 && storage && storage.store.energy > 0) {
+    if (storage && storage.store.energy > 0 && source.energy == 0 && (creep.carry.energy < 50 || creep.pos.isNearTo(storage) && creep.carry.energy < creep.carryCapacity)) {
         if (storage.transferEnergy(creep) == ERR_NOT_IN_RANGE) {
             creep.moveTo(storage);
         }
-    } else if (creep.carry.energy < creep.carryCapacity || creep.pos.isNearTo(source) && creep.carry.energy < creep.carryCapacity) {
+    } else if (creep.carry.energy < 50 || creep.pos.isNearTo(source) && creep.carry.energy < creep.carryCapacity) {
         if (creep.harvest(source) == ERR_NOT_IN_RANGE) {
             creep.moveTo(source);
         }
