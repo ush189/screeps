@@ -9,6 +9,7 @@ var claimer = require('claimer');
 var streeter = require('streeter');
 var harvesterExtern = require('harvesterExtern');
 var linker = require('linker');
+var builderExtern = require('builderExtern');
 
 Spawn.prototype.createCreepDynamic = function(room, body, role, maxFactor) {
     var factor;
@@ -79,6 +80,10 @@ module.exports.loop = function () {
             return creep.memory.role == 'harvesterExtern' && spawn && creep.memory.homeSpawnId == spawn.id;
         }).length;
 
+        var countBuilderExtern = _.filter(Game.creeps, function(creep) {
+            return creep.memory.role == 'builderExtern' && spawn && creep.memory.homeSpawnId == spawn.id;
+        }).length;
+
         var countClaimer = _.filter(Game.creeps, function(creep) {
             return creep.memory.role == 'claimer';
         }).length;
@@ -95,6 +100,7 @@ module.exports.loop = function () {
                 case 'streeter': streeter(creep); countStreeter++; break;
                 case 'harvesterExtern': harvesterExtern(creep, spawn); break;
                 case 'linker': linker(creep, storage); countLinker++; break;
+                case 'builderExtern': builderExtern(creep, spawn); break;
             }
         }
 
@@ -127,6 +133,8 @@ module.exports.loop = function () {
                 spawn.createCreepDynamic(room, [WORK, CARRY, MOVE], 'harvesterExtern');
             } else if (links.length && storage && countLinker < 1) {
                 spawn.createCreepDynamic(room, [CARRY, CARRY, CARRY, CARRY, CARRY, MOVE], 'linker', 1);
+            } else if (countBuilderExtern < 1) {
+                spawn.createCreepDynamic(room, [WORK, CARRY, MOVE], 'builderExtern');
             }
         }
     }
