@@ -1,3 +1,5 @@
+console.log('################################ new global');
+
 var harvester = require('harvester');
 var harvester2ndSrc = require('harvester2ndSrc');
 var builder = require('builder');
@@ -26,7 +28,7 @@ Spawn.prototype.createCreepDynamic = function(room, body, role, maxFactor) {
 
     var minFactor = this.memory.minFactor || 1;
     if (!maxFactor && factor < minFactor) {
-        console.log('minFactor ' + minFactor + ' > factor ' + factor);
+        console.log('[' + this.name + ']', 'minFactor ' + minFactor + ' > factor ' + factor);
 
         if (room.find(FIND_MY_CREEPS).length == 0) {
             // reset factor
@@ -36,13 +38,14 @@ Spawn.prototype.createCreepDynamic = function(room, body, role, maxFactor) {
         return null;
     }
 
-    var creepName = role + Math.floor((Math.random() * 10) + (factor - 1) * 10);
+    var creepName = role + Math.floor((Math.random() * 100) + factor * 100);
     result = this.createCreep(body, creepName, {role: role});
-    console.log(room, 'build ' + role + ': ', result);
+    console.log('[' + this.name + ']', 'build ' + role + ': ', result);
     return result;
 };
 
 module.exports.loop = function () {
+    console.log('-----------------------------  new tick');
     for (var code in Game.rooms) {
         var countHarvester = 0;
         var countHarvester2ndSrc = 0;
