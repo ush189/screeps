@@ -5,17 +5,17 @@ var externRoomPerSpawn = {
 };
 
 var moveOptions = {
-    reusePath: 10
-}
+    reusePath: 10,
+    ignoreCreeps: true
+};
 
 module.exports = function(creep, homeSpawn) {
-    if (!creep.memory.homeSpawnId) {
-        creep.memory.homeSpawnId = homeSpawn.id;
+    if (!creep.memory.targetRoomName) {
         creep.memory.targetRoomName = externRoomPerSpawn[homeSpawn.name];
     }
 
     if (creep.room.name != creep.memory.targetRoomName) {
-        var targetRoomPos = new RoomPosition(10,10, creep.memory.targetRoomName);
+        var targetRoomPos = new RoomPosition(25,25, creep.memory.targetRoomName);
         creep.moveTo(targetRoomPos, moveOptions);
     } else {
         var source = creep.pos.findClosestByRange(FIND_SOURCES);

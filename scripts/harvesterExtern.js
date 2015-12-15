@@ -4,28 +4,36 @@ var externRoomPerSpawn = {
     Outpost2: 'E11N13'
 };
 
-module.exports = function (creep, homeSpawn) {
-    if (!creep.memory.homeSpawnId) {
-        var targetRoomName = externRoomPerSpawn[homeSpawn.name];
+var moveOptions = {
+    reusePath: 10,
+    ignoreCreeps: true
+};
 
-        creep.memory.homeSpawnId = homeSpawn.id;
-        creep.memory.targetRoomName = targetRoomName;
+module.exports = function(creep, homeSpawn) {
+    if (!creep.memory.targetRoomName) {
+        creep.memory.targetRoomName = externRoomPerSpawn[homeSpawn.name];
     }
 
     if (creep.carry.energy < creep.carryCapacity) {
         if (creep.room.name != creep.memory.targetRoomName) {
-            var targetRoomPos = new RoomPosition(10,10, creep.memory.targetRoomName);
-            creep.moveTo(targetRoomPos);
+            var targetRoomPos = new RoomPosition(25,25, creep.memory.targetRoomName);
+            var startCpu = Game.getUsedCpu();
+            creep.moveTo(targetRoomPos, moveOptions);
+            var delta = Game.getUsedCpu() - startCpu; if (delta > 10) console.log(creep.name, delta.toFixed(1), '[' + creep.pos.roomName + ' -> ' + targetRoomPos.roomName + ' (to target room)]');
         } else {
             var source = creep.pos.findClosestByRange(FIND_SOURCES);
             if (creep.harvest(source) == ERR_NOT_IN_RANGE) {
-                creep.moveTo(source);
+                var startCpu = Game.getUsedCpu();
+                creep.moveTo(source, moveOptions);
+                var delta = Game.getUsedCpu() - startCpu; if (delta > 10) console.log(creep.name, delta.toFixed(1), '[' + creep.pos.roomName + ' -> ' + source.pos.roomName + ' (to source)]');
             }
         }
     } else {
         var homeSpawn = Game.getObjectById(creep.memory.homeSpawnId);
         if (creep.transferEnergy(homeSpawn) == ERR_NOT_IN_RANGE) {
-            creep.moveTo(homeSpawn);
+            var startCpu = Game.getUsedCpu();
+            creep.moveTo(homeSpawn, moveOptions);
+            var delta = Game.getUsedCpu() - startCpu; if (delta > 10) console.log(creep.name, delta.toFixed(1), '[' + creep.pos.roomName + ' -> ' + homeSpawn.pos.roomName + ' (to home)]');
         }
     }
 };
