@@ -149,8 +149,8 @@ module.exports.loop = function () {
                 spawn.createCreepDynamic(room, [CARRY, CARRY, CARRY, CARRY, CARRY, MOVE], 'linker', 1);
             } else if (countBuilderExtern < 1) {
                 spawn.createCreepDynamic(room, [WORK, CARRY, MOVE], 'builderExtern', null, spawn.id);
-            } else if (Game.flags.FlagAttack && countAttacker < 1) {
-                spawn.createCreepDynamic(room, [ATTACK, MOVE], 'attacker', 1);
+            } else if (Game.flags.FlagAttack && countAttacker < 3) {
+                spawn.createCreepDynamic(room, [MOVE, ATTACK], 'attacker', 2);
             }
         }
     }
