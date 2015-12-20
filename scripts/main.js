@@ -10,6 +10,7 @@ var streeter = require('streeter');
 var harvesterExtern = require('harvesterExtern');
 var linker = require('linker');
 var builderExtern = require('builderExtern');
+var attacker = require('attacker');
 
 Spawn.prototype.createCreepDynamic = function(room, body, role, maxFactor, homeSpawnId) {
     var factor;
@@ -94,6 +95,10 @@ module.exports.loop = function () {
             return creep.memory.role == 'claimer';
         }).length;
 
+        var countAttacker = _.filter(Game.creeps, function(creep) {
+            return creep.memory.role == 'attacker';
+        }).length;
+
         for (var name in creeps) {
             var creep = creeps[name];
             var startCpu = Game.getUsedCpu();
@@ -108,6 +113,7 @@ module.exports.loop = function () {
                 case 'harvesterExtern': harvesterExtern(creep, spawn); break;
                 case 'linker': linker(creep, storage); countLinker++; break;
                 case 'builderExtern': builderExtern(creep, spawn); break;
+                case 'attacker': attacker(creep); break;
             }
             //var delta = Game.getUsedCpu() - startCpu; if (delta > 10) console.log(creep.name, delta.toFixed(1));
         }
@@ -143,6 +149,8 @@ module.exports.loop = function () {
                 spawn.createCreepDynamic(room, [CARRY, CARRY, CARRY, CARRY, CARRY, MOVE], 'linker', 1);
             } else if (countBuilderExtern < 1) {
                 spawn.createCreepDynamic(room, [WORK, CARRY, MOVE], 'builderExtern', null, spawn.id);
+            } else if (Game.flags.FlagAttack && countAttacker < 1) {
+                spawn.createCreepDynamic(room, [ATTACK, MOVE], 'attacker', 1);
             }
         }
     }
