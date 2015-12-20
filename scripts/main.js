@@ -41,7 +41,7 @@ Spawn.prototype.createCreepDynamic = function(room, body, role, maxFactor, homeS
 
     var creepName = role + Math.floor((Math.random() * 100) + factor * 100);
     var memory = {
-        role: role,
+        role: role
     };
     if (homeSpawnId) {
         memory.homeSpawnId = homeSpawnId;
@@ -96,7 +96,7 @@ module.exports.loop = function () {
 
         for (var name in creeps) {
             var creep = creeps[name];
-            //var startCpu = Game.getUsedCpu();
+            var startCpu = Game.getUsedCpu();
             switch (creep.memory.role) {
                 case 'harvester': harvester(creep); countHarvester++; break;
                 case 'harvester2ndSrc': harvester2ndSrc(creep, storage); countHarvester2ndSrc++; break;
